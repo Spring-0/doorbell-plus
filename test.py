@@ -1,10 +1,10 @@
 import joblib
-from train import extract_features_from_audio
+from train import extract_features_from_audio_file
 
 model = joblib.load('class.pkl')
 
-test_audio_file = r'data\bell-test-2\test-doorbell-2-10.wav'
-test_features = extract_features_from_audio(test_audio_file).reshape(1, -1)
+test_audio_file = r'\data\doorbell\doorbell-06.wav'
+test_features = extract_features_from_audio_file(test_audio_file).reshape(1, -1)
 
 prediction = model.predict(test_features)
 
