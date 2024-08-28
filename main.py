@@ -3,7 +3,7 @@ from recorder import Recorder
 from train import extract_features_from_memory
 import numpy as np 
 import soundfile as sf
-
+import time
 
 def save_audio_to_file(filename, audio_data):
     sf.write(filename, audio_data, 16000)
@@ -32,8 +32,10 @@ def main():
             result = "Doorbell" if prediction[0] == 1 else "No Doorbell"
             print(result)
 
-            save_audio_to_file("manual_check.wav", frame)
-            break
+            if prediction[0] == 1:
+                timestamp = time.strftime("%Y%m%d-%H%M%S")
+                save_audio_to_file(f"data\\verify\\manual_check-{timestamp}.wav", frame)
+                print("Saved file for manual verification.")
 
         else:
             # print("[!] No audio frame capture")
