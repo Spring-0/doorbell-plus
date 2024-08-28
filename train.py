@@ -4,10 +4,13 @@ from sklearn.svm import SVC
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 import joblib
+import glob
 
-def extract_features_from_audio(file_path):
-    y, sr = librosa.load(file_path, sr=None)
+def extract_features(y, sr):
     features = []
+
+    if not isinstance(y, np.ndarray):
+        raise TypeError("y should be a numpy array.")
 
     mfccs = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=13)
     features.append(np.mean(mfccs, axis=1))
@@ -17,23 +20,26 @@ def extract_features_from_audio(file_path):
 
     return np.concatenate(features)
 
+def extract_features_from_audio_file(file_path):
+    y, sr = librosa.load(file_path, sr=None)
+    return extract_features(y, sr)
+ 
+def extract_features_from_memory(y, sr):
+    return extract_features(y, sr)
+
 def process_audio_files(file_paths):
     features = []
     labels = []
     for file_path in file_paths:
         label = 1 if 'doorbell' in file_path else 0
-        features.append(extract_features_from_audio(file_path))
+        features.append(extract_features_from_audio_file(file_path))
         labels.append(label)
     return np.array(features), np.array(labels)
 
 if __name__ == "__main__":
-    doorbell_files = ['data\\doorbell\\doorbell-01.wav', 'data\\doorbell\\doorbell-02.wav', 'data\\doorbell\\doorbell-03.wav', 'data\\doorbell\\doorbell-04.wav'
-                  , 'data\\doorbell\\doorbell-05.wav', 'data\\doorbell\\doorbell-06.wav', 'data\\doorbell\\doorbell-07.wav', 'data\\doorbell\\doorbell-08.wav'
-                  , 'data\\doorbell\\doorbell-09.wav', 'data\\doorbell\\doorbell-10.wav']
 
-    no_doorbell_files = ['data\\no-bell\\no-bell-01.wav', 'data\\no-bell\\no-bell-02.wav', 'data\\no-bell\\no-bell-03.wav', 'data\\no-bell\\no-bell-04.wav'
-                        , 'data\\no-bell\\no-bell-05.wav', 'data\\no-bell\\no-bell-06.wav', 'data\\no-bell\\no-bell-07.wav', 'data\\no-bell\\no-bell-08.wav'
-                        , 'data\\no-bell\\no-bell-09.wav', 'data\\no-bell\\no-bell-10.wav']
+    doorbell_files = glob.glob("data\\doorbell\\*")
+    no_doorbell_files = glob.glob("data\\no-bell\\*")
 
     doorbell_features, doorbell_labels = process_audio_files(doorbell_files)
     no_doorbell_features, no_doorbell_labels = process_audio_files(no_doorbell_files)
