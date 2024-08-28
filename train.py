@@ -21,7 +21,7 @@ def extract_features(y, sr):
     return np.concatenate(features)
 
 def extract_features_from_audio_file(file_path):
-    y, sr = librosa.load(file_path, sr=None)
+    y, sr = librosa.load(file_path, sr=16000)
     return extract_features(y, sr)
  
 def extract_features_from_memory(y, sr):
@@ -47,7 +47,7 @@ if __name__ == "__main__":
     X = np.vstack((doorbell_features, no_doorbell_features))
     y = np.concatenate((doorbell_labels, no_doorbell_labels))
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1, random_state=93, stratify=y)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42, stratify=y)
 
     model = SVC(kernel='linear')
     model.fit(X_train, y_train)
